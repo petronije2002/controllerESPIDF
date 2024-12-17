@@ -1,0 +1,17 @@
+dependencies:
+  espressif/tinyusb:
+    dependencies: []
+    source:
+      path: /Users/petarjovanovic/ESPIDF/deleteThis/components/espressif__tinyusb
+      type: local
+    version: 0.17.0~1
+  idf:
+    source:
+      type: idf
+    version: 5.3.2
+direct_dependencies:
+- espressif/tinyusb
+- idf
+manifest_hash: cf47a28245a1d25ebaf552fd0886df6fd71c93d13bfaa29c8dd35dbb8584d418
+target: esp32s3
+version: 2.0.0

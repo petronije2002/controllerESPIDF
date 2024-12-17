@@ -1,9 +1,10 @@
 {
     "C_Cpp.intelliSenseEngine": "default",
-    "idf.espIdfPath": "/Users/petarjovanovic/esp-idf",
+    "idf.espIdfPath": "/Users/petarjovanovic/esp/esp-idf",
     "idf.openOcdConfigs": [
         "board/esp32s3-builtin.cfg"
     ],
-    "idf.port": "/dev/tty.debug-console",
-    "idf.toolsPath": "/Users/petarjovanovic/esp/esp-idf"
+    "idf.port": "/dev/tty.usbmodem1101",
+    "idf.toolsPath": "/Users/petarjovanovic/.espressif/tools",
+    "idf.flashType": "JTAG"
 }
