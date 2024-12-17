@@ -1,6 +1,11 @@
 #include "SPImaster.h"
 #include "esp_log.h"
 #include "driver/spi_master.h"
+#include "driver/spi_common.h"
+
+
+
+
 
 static const char* TAG = "SPIMaster";  // Logging tag
 
@@ -29,6 +34,12 @@ void SPI::attachDevice(uint32_t clock_speed_hz, int spi_mode) {
     dev_cfg.mode = static_cast<int>(spi_mode);
     dev_cfg.spics_io_num = cs_pin;
     dev_cfg.queue_size = 1;
+    dev_cfg.cs_ena_pretrans = 100;
+    dev_cfg.cs_ena_posttrans = 100;
+    dev_cfg.input_delay_ns = 100;
+
+
+
 
     esp_err_t ret = spi_bus_add_device(spi_host, &dev_cfg, &spi_handle);
     if (ret != ESP_OK) {
@@ -72,3 +83,4 @@ SPI::~SPI() {
         ESP_LOGE(TAG, "Failed to free SPI bus: %s", esp_err_to_name(ret));
     }
 }
+
