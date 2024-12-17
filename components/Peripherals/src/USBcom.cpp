@@ -7,6 +7,8 @@ USBDevice::USBDevice()
 
     // static USBDevice* instance;
     ESP_LOGI(TAG, "USBDevice instance created");
+
+    USBDevice* instance = this;
 }
 
 USBDevice::~USBDevice()

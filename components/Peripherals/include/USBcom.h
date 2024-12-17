@@ -11,7 +11,7 @@ public:
     USBDevice();
     ~USBDevice();
 
-    // static USBDevice* instance;
+    static USBDevice* instance;
 
 
     void begin(); // Initialize the USB device
