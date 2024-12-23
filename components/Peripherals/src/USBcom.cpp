@@ -2,13 +2,21 @@
 
 static const char *TAG = "USBDevice";
 
+
+// constexpr size_t USBDevice::BUFFER_SIZE = 64;  // Define the buffer size
+
+USBDevice* USBDevice::instance = nullptr;
+
+
 USBDevice::USBDevice()
 {
 
     // static USBDevice* instance;
     ESP_LOGI(TAG, "USBDevice instance created");
 
-    USBDevice* instance = this;
+     instance = this;  
+
+    begin();
 }
 
 USBDevice::~USBDevice()
@@ -54,7 +62,7 @@ void USBDevice::send(const char *data, size_t len)
 
     if (tud_cdc_connected())
     {
-        // ESP_LOGI(TAG, "Sending data: %s", data); // Log data before sending
+     ESP_LOGI(TAG, "Sending data: %s", data); // Log data before sending
         tud_cdc_write(data, len);
         tud_cdc_write_flush();
     }
@@ -64,12 +72,29 @@ void USBDevice::send(const char *data, size_t len)
     }
 }
 
-
 void USBDevice::processData(uint8_t *data, size_t len)
 {
     ESP_LOGI(TAG, "Processing %zu bytes of data: %.*s", len, (int)len, data);
 
-    send(reinterpret_cast<const char *>(data), len);
+
+     
+
+    if (len <= BUFFER_SIZE)
+    {
+        memcpy(inputBuffer, data, len);
+        currentDataLength = len;
+         tud_cdc_write_flush();
+        xTaskNotifyGive(parserTaskHandle);
+    }
+    else
+    {
+        ESP_LOGE(TAG, "Received data exceeds buffer size!");
+        return;
+    }
+
+    // Notify the parserTask that new data is available
+
+    // send(reinterpret_cast<const char *>(data), len);
 
     // Add your data processing logic here
 }
@@ -77,22 +102,42 @@ void USBDevice::processData(uint8_t *data, size_t len)
 void USBDevice::cdcRxCallback(int itf, cdcacm_event_t *event)
 {
 
+    
+
     if (event->type == CDC_EVENT_RX)
     {
-        uint8_t buffer[64]; // Temporary buffer for incoming data
+        uint8_t buffer[256]; // Temporary buffer for incoming data
         size_t len = tud_cdc_n_read(itf, buffer, sizeof(buffer));
 
+        currentDataLength = len;
 
 
-            if (tud_cdc_connected())
+
+        if (tud_cdc_connected())
         {
             // ESP_LOGI(TAG, "Sending data: %s", data); // Log data before sending
-            tud_cdc_write(buffer, len);
-            tud_cdc_write_flush();
+
+            instance->processData(buffer,len);
+
+
+            // if (len <= BUFFER_SIZE)
+            // {
+            //     memcpy(inputBuffer, buffer, len);
+            //     currentDataLength = len;
+            //     xTaskNotifyGive(parserTaskHandle);
+            // }
+            // else
+            // {
+            //     ESP_LOGE(TAG, "Received data exceeds buffer size!");
+            //     return;
+            // }
+            //  instance().processData(buffer, len);
+            // tud_cdc_write(buffer, len);
+            // tud_cdc_write_flush();
         }
         else
         {
-            ESP_LOGW(TAG, "USB not connected. Unable to send data.");
+            ESP_LOGW(TAG, "USB not connected. Unable to read data.");
         }
 
         // if (instance != nullptr)
@@ -104,4 +149,22 @@ void USBDevice::cdcRxCallback(int itf, cdcacm_event_t *event)
         //     ESP_LOGE(TAG, "USBDevice instance is null!");
         // }
     }
+}
+
+void USBDevice::printf(const char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+
+    // Estimate buffer size
+    size_t size = vsnprintf(nullptr, 0, format, args) + 1;
+    va_end(args);
+
+    std::vector<char> buffer(size);
+
+    va_start(args, format);
+    vsnprintf(buffer.data(), buffer.size(), format, args);
+    va_end(args);
+
+    send(buffer.data(), buffer.size() - 1); // Exclude null terminator
 }
