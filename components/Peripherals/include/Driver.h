@@ -2,8 +2,20 @@
 #define DRIVER_H
 
 #include "driver/mcpwm.h"
+// #include "driver/mcpwm_prelude.h"
 #include "soc/mcpwm_reg.h"
 #include "soc/mcpwm_struct.h"
+
+
+
+// #include "driver/mcpwm_timer.h"
+// #include "driver/mcpwm_oper.h"
+// #include "driver/mcpwm_cmpr.h"
+// #include "driver/mcpwm_gen.h"
+// #include "driver/mcpwm_fault.h"
+// #include "driver/mcpwm_sync.h"
+// #include "driver/mcpwm_cap.h"
+// #include "driver/mcpwm_etm.h"
 
 class Driver {
 public:
@@ -15,6 +27,8 @@ public:
 
     void stopDriver();
     void startDriver();
+
+
 
 
     mcpwm_config_t pwm_config;

@@ -21,19 +21,22 @@
 
 class SPI {
 private:
-    // spi_device_handle_t spi_handle;
+   
     spi_host_device_t spi_host;
     // int cs_pin;
 
 public:
     SPI(spi_host_device_t host, int mosi_pin, int miso_pin, int sclk_pin);
     void attachDevice(uint32_t clock_speed_hz, spi_device_handle_t *handle,int cs_pin, int spi_mode );
-    uint16_t transfer(uint8_t* tx_data, uint8_t* rx_data, size_t length,spi_device_handle_t &handle);
+    void transfer(uint8_t* tx_data, uint8_t* rx_data, size_t length,spi_device_handle_t *handle);
+    void transfer1(uint8_t *tx_data, uint8_t *rx_data, size_t length, spi_device_handle_t *handle);
 
     uint8_t tx_data_[2];  // Command to send
     uint8_t rx_data_[2];  // Buffer for received data
 
     uint16_t result;   
+
+     spi_device_handle_t spi_handle;
 
     // uint8_t tx_data_[2] = {0x3F, 0xFF}; // Command to send
     // uint8_t rx_data_[2];                // Buffer for received data

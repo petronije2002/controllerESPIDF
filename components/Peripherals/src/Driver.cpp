@@ -3,7 +3,11 @@
 Driver::Driver(int loPhase1, int hoPhase1, int loPhase2, int hoPhase2, int loPhase3, int hoPhase3)
     : _loPhase1(loPhase1), _hoPhase1(hoPhase1),
       _loPhase2(loPhase2), _hoPhase2(hoPhase2),
-      _loPhase3(loPhase3), _hoPhase3(hoPhase3) {}
+      _loPhase3(loPhase3), _hoPhase3(hoPhase3) {
+
+
+        this->init();
+      }
 
 
   

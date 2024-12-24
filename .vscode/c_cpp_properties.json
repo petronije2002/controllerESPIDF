@@ -2,11 +2,11 @@
     "configurations": [
         {
             "name": "ESP-IDF",
-            "compilerPath": "${config:idf.toolsPath}/tools/xtensa-esp-elf/esp-13.2.0_20240530/xtensa-esp32s3-elf-gcc",
+            "compilerPath": "/Users/petarjovanovic/.espressif/tools/xtensa-esp-elf/esp-13.2.0_20240530/xtensa-esp-elf/bin/xtensa-esp32s3-elf-gcc",
             "compileCommands": "${config:idf.buildPath}/compile_commands.json",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${IDF_PATH}/components/**"
+                "/Users/petarjovanovic/esp/esp-idf/components/**"
             ],
             "defines": [
                 "ESP32S3"
@@ -14,13 +14,13 @@
             "browse": {
                 "path": [
                     "${config:idf.espIdfPath}/components",
-                    "${workspaceFolder}"
+                    "${workspaceFolder}/**"
                 ],
                 "limitSymbolsToIncludedHeaders": true
             },
             "cStandard": "c17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "macos-gcc-x86"
+            "intelliSenseMode": "macos-gcc-x64"
         }
     ],
     "version": 4

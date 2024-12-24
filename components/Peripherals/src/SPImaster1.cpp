@@ -1,4 +1,9 @@
 #include "SPImaster1.h"
+#include "USBcom.h"
+
+
+
+extern USBDevice usb_;
 
 static const char *TAG = "SPIMaster1"; // Logging tag
 
@@ -48,29 +53,42 @@ void SPI::attachDevice(uint32_t clock_speed_hz, spi_device_handle_t *handle,int 
         return;
     }
 
-    ESP_LOGI(TAG, "SPI device attached successfully.");
+    ESP_LOGI(TAG, "Adding SPI device with config: clock=%lu Hz, cs_pin=%d, mode=%d",
+         clock_speed_hz, cs_pin, spi_mode);
+
+    // ESP_LOGI(TAG, "SPI device attached successfully.");
 }
 
-uint16_t SPI::transfer(uint8_t *tx_data, uint8_t *rx_data, size_t length, spi_device_handle_t &handle)
+void SPI::transfer(uint8_t *tx_data, uint8_t *rx_data, size_t length, spi_device_handle_t *handle)
 {
     spi_transaction_t transaction = {}; // Initialize all fields to zero
     transaction.length = length * 8;    // Length in bits
     transaction.tx_buffer = tx_data;
     transaction.rx_buffer = rx_data;
 
-    esp_err_t ret = spi_device_transmit(handle, &transaction);
+    esp_err_t ret = spi_device_transmit( *handle, &transaction);
     if (ret != ESP_OK)
     {
         ESP_LOGE(TAG, "SPI transfer failed: %s", esp_err_to_name(ret));
 
-        return 0;
+       
+        return ;
     }
     else
     {
 
-        uint16_t received_value = (rx_data_[0] << 8) | rx_data_[1]; // combaine to get 16 bits value
+        // ESP_LOGI(TAG, "SPI transfer completed:");
+        //  usb_.printf("Transmittion completed");
 
-        
+
+        // uint16_t received_value = (rx_data[0] << 8) | rx_data[1]; // combaine to get 16 bits value
+
+
+        // ESP_LOGI( TAG, "SPI received value %u", );
+
+        // uint16_t received_value = (rx_data[0] << 8) | rx_data[1]; // combaine to get 16 bits value
+
+        // uint16_t angle = ((rx_data[0] << 8) | rx_data[1]) &  0x3FFF;
 
         // uint16_t rawAngle = *rx_data ;
         // (rx_data[0] << 8) | rx_data[1];  // Combine the two bytes to form a 16-bit value
@@ -84,9 +102,9 @@ uint16_t SPI::transfer(uint8_t *tx_data, uint8_t *rx_data, size_t length, spi_de
 
         // this->result = received_value;
 
-        ESP_LOGI(TAG, "SPI transfer completed successfully.");
+        // ESP_LOGI(TAG, "SPI transfer completed successfully %u", received_value);
 
-        return received_value;
+        return ;
         // ESP_LOGI(TAG, "Received angle : %f",newAngle_);
         //  ESP_LOGI(TAG, "Received: %f", *rx_data);
     }
@@ -116,5 +134,56 @@ SPI::~SPI()
     else
     {
         ESP_LOGE(TAG, "Failed to free SPI bus: %s", esp_err_to_name(ret));
+    }
+}
+
+
+
+
+void SPI::transfer1(uint8_t *tx_data, uint8_t *rx_data, size_t length, spi_device_handle_t *handle)
+{
+    spi_transaction_t transaction = {}; // Initialize all fields to zero
+    transaction.length = length * 8;    // Length in bits
+    transaction.tx_buffer = this->tx_data_;
+    transaction.rx_buffer = this->rx_data_;
+
+    esp_err_t ret = spi_device_transmit( spi_handle, &transaction);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "SPI transfer failed: %s", esp_err_to_name(ret));
+
+       
+        return;
+    }
+    else
+    {
+
+        ESP_LOGI(TAG, "SPI transfer completed:");
+        //  usb_.printf("Transmittion completed");
+
+
+        uint16_t received_value = (rx_data_[0] << 8) | rx_data_[1]; // combaine to get 16 bits value
+
+        
+
+        // uint16_t rawAngle = *rx_data ;
+        // (rx_data[0] << 8) | rx_data[1];  // Combine the two bytes to form a 16-bit value
+
+        // Mask the top 2 bits (PAR and EF)
+
+
+        // uint16_t rawAngle = received_value & 0x3FFF; // This keeps only the lower 14 bits
+
+        // float newAngle_ = ((float)rawAngle / 16384.0) * M_TWOPI; // to radians
+
+        // this->result = received_value;
+
+        ESP_LOGI(TAG, "SPI transfer completed successfully.");
+
+        // return received_value;
+        // ESP_LOGI(TAG, "Received angle : %f",newAngle_);
+        //  ESP_LOGI(TAG, "Received: %f", *rx_data);
+
+        return;
     }
 }

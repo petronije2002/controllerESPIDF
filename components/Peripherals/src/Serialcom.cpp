@@ -4,6 +4,8 @@
 #include "Serialcom.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/semphr.h"
+
 #include <stdexcept>
 #include <vector>
 #include "esp_log.h"

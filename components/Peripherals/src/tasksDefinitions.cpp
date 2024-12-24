@@ -186,3 +186,43 @@ void parserTaskQueue(void *param)
         }
     }
 }
+
+
+
+
+void printMultiturnAngleTask(void *param){
+
+
+
+
+    AS5048 *sensor = (AS5048 *)param;
+
+
+
+    while(1){
+
+
+
+        usb_.printf("Current angle:");
+
+
+        // usb_.printf("Testing USB communication.: %f\n", Encoder.getMultiTurnAngle());
+
+
+
+
+
+
+
+        vTaskDelay(pdMS_TO_TICKS(800));
+
+
+    }
+
+
+
+
+
+
+
+}
