@@ -48,7 +48,7 @@ public:
 
     // int bufferLength = 8;
 
-    float multiTurnBuffer[5];
+    float multiTurnBuffer[5]= {0.0,0.0,0.0,0.0,0.0};
 
     int bufferIndex = 0;
 
@@ -63,6 +63,9 @@ public:
 
     uint8_t tx_data_[2];  // Command to send
     uint8_t rx_data_[2];  // Buffer for received data
+
+    TaskHandle_t encoderTaskHandle = NULL;
+
 
     
 
@@ -85,6 +88,11 @@ private:
 
     // Static task function for running in the FreeRTOS task
     static void angleTask(void *pvParameters);
+
+    
+
+    static void angleTaskTest(void *pvParameters);
+
 
     
     // Reads and updates the current angle and velocity

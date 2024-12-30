@@ -76,37 +76,8 @@ void SPI::transfer(uint8_t *tx_data, uint8_t *rx_data, size_t length, spi_device
     }
     else
     {
-
-        // ESP_LOGI(TAG, "SPI transfer completed:");
-        //  usb_.printf("Transmittion completed");
-
-
-        // uint16_t received_value = (rx_data[0] << 8) | rx_data[1]; // combaine to get 16 bits value
-
-
-        // ESP_LOGI( TAG, "SPI received value %u", );
-
-        // uint16_t received_value = (rx_data[0] << 8) | rx_data[1]; // combaine to get 16 bits value
-
-        // uint16_t angle = ((rx_data[0] << 8) | rx_data[1]) &  0x3FFF;
-
-        // uint16_t rawAngle = *rx_data ;
-        // (rx_data[0] << 8) | rx_data[1];  // Combine the two bytes to form a 16-bit value
-
-        // Mask the top 2 bits (PAR and EF)
-
-
-        // uint16_t rawAngle = received_value & 0x3FFF; // This keeps only the lower 14 bits
-
-        // float newAngle_ = ((float)rawAngle / 16384.0) * M_TWOPI; // to radians
-
-        // this->result = received_value;
-
-        // ESP_LOGI(TAG, "SPI transfer completed successfully %u", received_value);
-
         return ;
-        // ESP_LOGI(TAG, "Received angle : %f",newAngle_);
-        //  ESP_LOGI(TAG, "Received: %f", *rx_data);
+      
     }
 }
 
@@ -114,16 +85,6 @@ SPI::~SPI()
 {
     esp_err_t ret;
 
-    // // Remove SPI device
-    // ret = spi_bus_remove_device(handle);
-    // if (ret == ESP_OK)
-    // {
-    //     ESP_LOGI(TAG, "SPI device removed successfully.");
-    // }
-    // else
-    // {
-    //     ESP_LOGE(TAG, "Failed to remove SPI device: %s", esp_err_to_name(ret));
-    // }
 
     // Free SPI bus
     ret = spi_bus_free(spi_host);
@@ -157,33 +118,8 @@ void SPI::transfer1(uint8_t *tx_data, uint8_t *rx_data, size_t length, spi_devic
     }
     else
     {
-
-        ESP_LOGI(TAG, "SPI transfer completed:");
-        //  usb_.printf("Transmittion completed");
-
-
-        uint16_t received_value = (rx_data_[0] << 8) | rx_data_[1]; // combaine to get 16 bits value
-
-        
-
-        // uint16_t rawAngle = *rx_data ;
-        // (rx_data[0] << 8) | rx_data[1];  // Combine the two bytes to form a 16-bit value
-
-        // Mask the top 2 bits (PAR and EF)
-
-
-        // uint16_t rawAngle = received_value & 0x3FFF; // This keeps only the lower 14 bits
-
-        // float newAngle_ = ((float)rawAngle / 16384.0) * M_TWOPI; // to radians
-
-        // this->result = received_value;
-
-        ESP_LOGI(TAG, "SPI transfer completed successfully.");
-
-        // return received_value;
-        // ESP_LOGI(TAG, "Received angle : %f",newAngle_);
-        //  ESP_LOGI(TAG, "Received: %f", *rx_data);
-
+        // ESP_LOGI(TAG, "SPI transfer completed:");
+        // ESP_LOGI(TAG, "SPI transfer completed successfully.");
         return;
     }
 }
