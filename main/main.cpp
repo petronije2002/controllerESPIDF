@@ -131,12 +131,12 @@ extern "C" void app_main()
     int64_t start_time = esp_timer_get_time();
 
 
-    profGen.generateScurveProfile(6,2.8);
+    profGen.generateScurveProfile(0.7,2.0);
 
     int64_t end_time = esp_timer_get_time();
 
 
-     int64_t execution_time = end_time - start_time; // Time in microseconds
+    int64_t execution_time = end_time - start_time; // Time in microseconds
      ESP_LOGW("ExecutionTime", "generateScurveProfile execution time: %lld microseconds", execution_time);
 
 

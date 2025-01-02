@@ -201,7 +201,7 @@ void ProfileGenerator::generateScurveProfile(float totalDistance, float commande
     // float commanded_velocity = maxVelocity;  // Example commanded velocity
 
     // Call the function to generate the angle and velocity values
-    generateAngleAndVelocityValues1(totalDistance, commandedVelocity);
+    generateAngleAndVelocityValues2(totalDistance, commandedVelocity);
 }
 
 // Get the position profile
@@ -302,24 +302,19 @@ void ProfileGenerator::generateAngleAndVelocityValues1(float angleToGo, float co
         commanded_velocity = 2 * (accelerationTime) / angleToGo;
         total_time = angleToGo / commanded_velocity;
         constVelocity_time = 0;
+
+
+        positionProfile = std::vector<float>(num_accel_segments * 2 + num_const_segments +1 , 0.0f); // All positions start at initialPosition
+        velocityProfile = std::vector<float>(num_accel_segments * 2 + num_const_segments +1 , 0.0f);           // All velocities are zero
+        currentTime = std::vector<float>(num_accel_segments * 2 + num_const_segments +1 , 0.0f);  
+
+    
+
     }
 
-    // Initialize vectors to store angle and velocity values
-    // positionProfile.clear();
-    // velocityProfile.clear();
-    // currentTime.clear();
-
-    // angles.clear();
-
-    // Calculate step size for each phase
-    // num_accel_segments = 15; // Example value for acceleration segments
-    // int num_const_segments = 3;  // Example value for constant velocity segments
+   
     float step_size_ad = accelerationTime / (float)(num_accel_segments);
     float step_size_const = constVelocity_time / (float)(num_const_segments);
-
-    // positionProfile.resize(num_accel_segments * 2 + num_const_segments + 1 );
-    // velocityProfile.resize(num_accel_segments * 2 + num_const_segments +1 );
-    // currentTime.resize(num_accel_segments * 2 + num_const_segments +1  );
 
     // Acceleration Phase
     float current_time = 0;
@@ -351,8 +346,10 @@ void ProfileGenerator::generateAngleAndVelocityValues1(float angleToGo, float co
                 if (i == num_accel_segments)
                 {
 
-                    velocityProfile[i] = commanded_velocity;
-                    
+                    // velocityProfile[i] = commanded_velocity;
+
+                     velocityProfile[i] =commanded_velocity;
+
                     constAngle = angleToGo - 2 * positionProfile[i];
 
                     step_size_const = (constAngle / commanded_velocity) / num_const_segments;
@@ -375,7 +372,7 @@ void ProfileGenerator::generateAngleAndVelocityValues1(float angleToGo, float co
             }
         }
 
-        if (i > num_accel_segments && i <= num_accel_segments + num_const_segments)
+        if (i > num_accel_segments && i <= (num_accel_segments + num_const_segments) && step_size_const != 0)
         {
 
             current_time = accelerationTime + (i - num_accel_segments) * step_size_const;
@@ -384,20 +381,207 @@ void ProfileGenerator::generateAngleAndVelocityValues1(float angleToGo, float co
 
             positionProfile[i] = positionProfile[i - 1] + commanded_velocity * step_size_const;
 
-            velocityProfile[i] = calculateCommandedVelocity(current_time, commanded_velocity, constVelocity_time);
+            velocityProfile[i] = commanded_velocity;
+            //  calculateCommandedVelocity(current_time, commanded_velocity, constVelocity_time);
         }
 
-        if (i > num_accel_segments + num_const_segments && i <= 2 * num_accel_segments + num_const_segments)
+        if (i > num_accel_segments + num_const_segments && i <= 2 * num_accel_segments + num_const_segments+1)
         {
-
             current_time = accelerationTime + constVelocity_time + (i - num_accel_segments - num_const_segments) * step_size_ad;
+           
             currentTime[i] = current_time;
 
-            int rel_i = i - num_accel_segments - num_const_segments;
+            int rel_i = i - num_accel_segments - num_const_segments ;
 
-            positionProfile[i] = positionProfile[i - 1] + (positionProfile[num_accel_segments + 1 - rel_i] - positionProfile[num_accel_segments - rel_i]);
 
-            velocityProfile[i] = calculateCommandedVelocity(current_time, commanded_velocity, constVelocity_time);
+             positionProfile[i] = angleToGo - positionProfile[num_accel_segments  - rel_i ] ;
+
+             velocityProfile[i] =  velocityProfile[num_accel_segments - rel_i];
+
+
+
+
+
+            // positionProfile[i] = positionProfile[i - 1] + (positionProfile[num_accel_segments + 1 - rel_i] - positionProfile[num_accel_segments - rel_i]);
+
+            // velocityProfile[i] = calculateCommandedVelocity(current_time, commanded_velocity, constVelocity_time);
+
+            // if(i ==2 * num_accel_segments + num_const_segments +1){
+            //      velocityProfile[i]  = 0;
+
+
+
+            // }
+        }
+    }
+}
+
+
+
+// HERE TRY TO ADJUST CORRECT FUNCTION!!!!!
+
+
+void ProfileGenerator::generateAngleAndVelocityValues2(float angleToGo, float commanded_velocity)
+{
+    // Compute total time based on commanded velocity
+    float total_time = angleToGo / commanded_velocity;
+
+    // Calculate time spent at constant velocity
+    float constVelocity_time = total_time - 2 * accelerationTime;
+
+
+    float step_size_ad = 0;
+    float step_size_const = 0;
+
+    // positionProfile = std::vector<float>(num_accel_segments * 2 + num_const_segments +1 , 0.0f); // All positions start at initialPosition
+    // velocityProfile = std::vector<float>(num_accel_segments * 2 + num_const_segments +1 , 0.0f);           // All velocities are zero
+    // currentTime = std::vector<float>(num_accel_segments * 2 + num_const_segments +1 , 0.0f);  
+        
+
+    if (constVelocity_time <= 0)
+    {
+        // If no constant velocity phase, recalculate commanded velocity to fit the acceleration phase
+        commanded_velocity = angleToGo/ (2 * (accelerationTime)) ;
+        total_time = angleToGo / commanded_velocity;
+        constVelocity_time = 0;
+
+
+       
+
+        // positionProfile.resize(num_accel_segments * 2 + 1 );
+        // velocityProfile.resize(num_accel_segments * 2 + 1 );
+        // currentTime.resize(num_accel_segments * 2 + 1 );
+
+        step_size_ad = accelerationTime / (float)(num_accel_segments);
+    
+    }else{
+
+        // positionProfile = std::vector<float>(num_accel_segments * 2 + num_const_segments +1 , 0.0f); // All positions start at initialPosition
+        // velocityProfile = std::vector<float>(num_accel_segments * 2 + num_const_segments +1 , 0.0f);           // All velocities are zero
+        // currentTime = std::vector<float>(num_accel_segments * 2 + num_const_segments +1 , 0.0f);  
+    
+        // positionProfile.resize(num_accel_segments * 2 + num_const_segments + 1 );
+        // velocityProfile.resize(num_accel_segments * 2 + num_const_segments +1 );
+        // currentTime.resize(num_accel_segments * 2 + num_const_segments +1  );
+        
+        
+        step_size_ad = accelerationTime / (float)(num_accel_segments);
+        step_size_const = constVelocity_time / (float)(num_const_segments);
+
+        //  ESP_LOGW("step size check:", " %f, %d",step_size_ad , positionProfile.size() );
+        //  ESP_LOGW("step size check:", " %f",step_size_const );
+
+       
+
+    }
+
+
+    // Acceleration Phase
+    float current_time = 0;
+
+    for (int i = 1; i <= num_accel_segments * 2 + num_const_segments +1 ; ++i)
+    {
+
+        if (i <= num_accel_segments )
+        {
+
+            current_time = i * step_size_ad;
+
+            currentTime[i] = current_time;
+
+            if (i == 1)
+            {
+
+                positionProfile[i] = calculateDesiredPositionAtT(current_time, 0, step_size_ad);
+                velocityProfile[i] = calculateCommandedVelocity(current_time, commanded_velocity, constVelocity_time);
+
+                 continue;
+            }
+            else
+            {
+
+                positionProfile[i] = positionProfile[i - 1] + calculateDesiredPositionAtT(current_time, float(velocityProfile[i - 1]), step_size_ad);
+                velocityProfile[i] =calculateCommandedVelocity(current_time, commanded_velocity, constVelocity_time);
+                
+                if (i == num_accel_segments && constVelocity_time != 0)
+                {
+
+                    // velocityProfile[i] = commanded_velocity;
+
+                    velocityProfile[i] = commanded_velocity;
+
+                    constAngle = angleToGo - 2 * positionProfile[i];
+
+                    step_size_const = (constAngle / commanded_velocity) / num_const_segments;
+
+                    constVelocity_time = constAngle / commanded_velocity;
+
+
+                    // if (constVelocity_time == 0)
+                    // {
+
+                    //     constVelocity_time = 0;
+                    // }
+                    // else
+                    // {
+                    //     constVelocity_time = 0;
+                    //     constVelocity_time = constAngle / commanded_velocity;
+                    // }
+                }else if(i == num_accel_segments && constVelocity_time == 0){
+
+
+
+                    velocityProfile[i] = commanded_velocity;
+                    constAngle = angleToGo - 2 * positionProfile[i];
+
+                    constVelocity_time = constAngle / commanded_velocity;
+                    step_size_const = (constAngle / commanded_velocity) / num_const_segments;
+                    // constVelocity_time = 0;
+
+                }
+            }
+        }
+
+        if (i > num_accel_segments && i <= (num_accel_segments + num_const_segments)  )
+        {
+
+            current_time = accelerationTime + (i - num_accel_segments) * step_size_const;
+
+            currentTime[i] = current_time;
+
+            positionProfile[i] = positionProfile[i - 1] + commanded_velocity * step_size_const;
+
+            velocityProfile[i] = commanded_velocity;
+            //  calculateCommandedVelocity(current_time, commanded_velocity, constVelocity_time);
+        }
+
+        if (i > num_accel_segments + num_const_segments && i <= 2 * num_accel_segments + num_const_segments+1)
+        {
+            current_time = accelerationTime + constVelocity_time + (i - num_accel_segments - num_const_segments) * step_size_ad;
+           
+            currentTime[i] = current_time;
+
+            int rel_i = i - num_accel_segments - num_const_segments ;
+
+
+             positionProfile[i] = angleToGo - positionProfile[num_accel_segments  - rel_i ] ;
+
+             velocityProfile[i] =  velocityProfile[num_accel_segments - rel_i];
+
+
+
+
+
+            // positionProfile[i] = positionProfile[i - 1] + (positionProfile[num_accel_segments + 1 - rel_i] - positionProfile[num_accel_segments - rel_i]);
+
+            // velocityProfile[i] = calculateCommandedVelocity(current_time, commanded_velocity, constVelocity_time);
+
+            // if(i ==2 * num_accel_segments + num_const_segments +1){
+            //      velocityProfile[i]  = 0;
+
+
+
+            // }
         }
     }
 }

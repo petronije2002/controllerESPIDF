@@ -62,10 +62,10 @@ private:
     float constAngle = 0;
 
     std::vector<float> sigmoidLookupTable;
-    float lookupTableSize= 30;
+    float lookupTableSize= 50;
     float sigmoidStep = (sigmoidMax - sigmoidMin) / lookupTableSize;
     
-    int num_accel_segments = 10; // Example value for acceleration segments
+    int num_accel_segments = 15; // Example value for acceleration segments
     int num_const_segments = 3; 
 
 
@@ -80,6 +80,7 @@ private:
     float calculateDesiredPositionAtT(float current_time, float prevVel, float step_size_ad);
 
      void generateAngleAndVelocityValues1(float angleToGo, float commanded_velocity);
+     void generateAngleAndVelocityValues2(float angleToGo, float commanded_velocity);
 
 };
 
